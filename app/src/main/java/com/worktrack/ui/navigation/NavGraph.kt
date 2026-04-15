@@ -7,6 +7,8 @@ import androidx.navigation.navArgument
 import com.worktrack.ui.screens.ActivityScreen
 import com.worktrack.ui.screens.AddEntryScreen
 import com.worktrack.ui.screens.EditEntriesScreen
+import com.worktrack.ui.screens.EditEntryScreen
+import com.worktrack.ui.screens.EntryListScreen
 import com.worktrack.ui.screens.EntryOptionsScreen
 import com.worktrack.ui.screens.HistoryScreen
 import com.worktrack.ui.screens.HomeScreen
@@ -29,6 +31,10 @@ sealed class Screen(val route: String) {
     object EntryOptions : Screen("entry_options/{jobId}") {
         fun createRoute(jobId: Long) = "entry_options/$jobId"
     }
+    object EntryList : Screen("entry_list/{jobId}") {
+        fun createRoute(jobId: Long) = "entry_list/$jobId"
+    }
+    object EditEntry : Screen("edit_entry/{entryId}")
 
 }
 
@@ -103,6 +109,9 @@ sealed class Screen(val route: String) {
                     companyId = companyId,
                     onBack = { navController.popBackStack() },
                     onJobClick = { jobId ->
+                        navController.navigate(Screen.EntryList.createRoute(jobId))
+                    },
+                    onAddEntryClick = { jobId ->
                         navController.navigate(Screen.EntryOptions.createRoute(jobId))
                     }
                 )
@@ -136,6 +145,35 @@ sealed class Screen(val route: String) {
 
                 TimerScreen(
                     jobId = jobId,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = Screen.EntryList.route,
+                arguments = listOf(navArgument("jobId") { type = NavType.LongType })
+            ) { backStackEntry ->
+
+                val jobId = backStackEntry.arguments?.getLong("jobId") ?: 0L
+
+                EntryListScreen(
+                    jobId = jobId,
+                    onBack = { navController.popBackStack()},
+                    onEditClick = { entryId ->
+                        navController.navigate("edit_entry/$entryId")
+                    }
+                )
+            }
+
+            composable(
+                route = Screen.EditEntry.route,
+                arguments = listOf(navArgument("entryId") { type = NavType.LongType })
+            ) { backStackEntry ->
+
+                val entryId = backStackEntry.arguments?.getLong("entryId") ?: 0L
+
+                EditEntryScreen(
+                    entryId = entryId,
                     onBack = { navController.popBackStack() }
                 )
             }

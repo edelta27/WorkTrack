@@ -1,7 +1,9 @@
 package com.worktrack.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,7 +27,8 @@ import com.worktrack.data.model.Job
 fun JobListScreen(
     companyId: Long,
     onBack: () -> Unit,
-    onJobClick: (Long) -> Unit
+    onJobClick: (Long) -> Unit,
+    onAddEntryClick: (Long) -> Unit
 ) {
     var jobName by remember { mutableStateOf("") }
 
@@ -65,15 +68,31 @@ fun JobListScreen(
         LazyColumn {
             items(jobs) { job ->
 
-                Text(
-                    text = job.name,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            onJobClick(job.id)
-                        }
-                        .padding(12.dp)
-                )
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Text(
+                        text = job.name,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                onJobClick(job.id)
+                            }
+                    )
+
+                    Text(
+                        text = "+",
+                        modifier = Modifier
+                            .clickable {
+                                onAddEntryClick(job.id)
+                            }
+                            .padding(8.dp)
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -83,3 +102,4 @@ fun JobListScreen(
         }
     }
 }
+
