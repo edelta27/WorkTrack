@@ -55,14 +55,14 @@ fun HomeScreen(
                 )
             }
 
-            FakeDatabase.jobs.forEach { job ->
-
-                val total = FakeDatabase.entries
-                    .filter { it.jobId == job.id }
-                    .sumOf { it.hours }
-
-                Text("${job.name} - ${"%.2f".format(total)} h")
-            }
+//            FakeDatabase.jobs.forEach { job ->
+//
+//                val total = FakeDatabase.entries
+//                    .filter { it.jobId == job.id }
+//                    .sumOf { it.hours }
+//
+//                Text("${job.name} - ${"%.2f".format(total)} h")
+//            }
 
             Box(modifier = Modifier.fillMaxSize()) {
                 FloatingActionButton(
