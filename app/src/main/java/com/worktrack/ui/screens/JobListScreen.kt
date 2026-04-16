@@ -91,8 +91,13 @@ fun JobListScreen(
                                 }
                         )
 
+                        val currentMonth = getCurrentMonth()
+
                         val totalHours = FakeDatabase.entries
-                            .filter { it.jobId == job.id }
+                            .filter {
+                                it.jobId == job.id &&
+                                        it.date.startsWith(currentMonth)
+                            }
                             .sumOf { it.hours }
 
                         Text(

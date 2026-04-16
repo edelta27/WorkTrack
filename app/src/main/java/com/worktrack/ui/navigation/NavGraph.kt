@@ -59,9 +59,12 @@ sealed class Screen(val route: String) {
                         navController.navigate(Screen.Activity.route)
                     },
                     onCompanyClick = {
-                            companyId -> navController.navigate(Screen.JobList.createRoute(companyId))
+                        companyId -> navController.navigate(Screen.JobList.createRoute(companyId))
+                                     },
+                    onHistoryClick = {
+                        navController.navigate(Screen.History.route)
                     }
-                )
+                    )
             }
 
             composable(

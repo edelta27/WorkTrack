@@ -14,12 +14,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.worktrack.data.local.FakeDatabase
 import com.worktrack.data.model.Company
+import java.util.Calendar
 
 
 @Composable
 fun HomeScreen(
     onCompanyClick: (Long) -> Unit,
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    onHistoryClick: () -> Unit
 ) {
     var refreshTrigger by remember { mutableStateOf(0) }
 
@@ -44,8 +46,13 @@ fun HomeScreen(
                 val jobsForCompany = FakeDatabase.jobs
                     .filter { it.companyId == company.id }
 
+                val currentMonth = getCurrentMonth()
+
                 val totalHours = FakeDatabase.entries
-                    .filter { entry -> jobsForCompany.any { it.id == entry.jobId } }
+                    .filter { entry ->
+                        entry.date.startsWith(currentMonth) &&
+                                jobsForCompany.any { it.id == entry.jobId }
+                    }
                     .sumOf { it.hours }
 
                 Row(
@@ -102,6 +109,14 @@ fun HomeScreen(
 //
 //                Text("${job.name} - ${"%.2f".format(total)} h")
 //            }
+
+            Button(
+                onClick = onHistoryClick,
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                Text("Historia")
+            }
 
             Box(modifier = Modifier.fillMaxSize()) {
                 FloatingActionButton(
@@ -192,4 +207,13 @@ fun HomeScreen(
             )
         }
     }
+}
+
+fun getCurrentMonth(): String {
+    val calendar = Calendar.getInstance()
+
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH) + 1
+
+    return "$year-${month.toString().padStart(2, '0')}"
 }
