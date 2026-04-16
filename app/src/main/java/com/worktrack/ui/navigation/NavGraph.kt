@@ -6,7 +6,6 @@ import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.worktrack.ui.screens.ActivityScreen
 import com.worktrack.ui.screens.AddEntryScreen
-import com.worktrack.ui.screens.EditEntriesScreen
 import com.worktrack.ui.screens.EditEntryScreen
 import com.worktrack.ui.screens.EntryListScreen
 import com.worktrack.ui.screens.EntryOptionsScreen
@@ -24,7 +23,6 @@ sealed class Screen(val route: String) {
     }
     object Activity : Screen("activity")
     object History : Screen("history")
-    object EditEntries : Screen("edit_entries")
     object JobList : Screen("job_list/{companyId}") {
         fun createRoute(companyId: Long) = "job_list/$companyId"
     }
@@ -88,12 +86,6 @@ sealed class Screen(val route: String) {
 
             composable(Screen.History.route) {
                 HistoryScreen(
-                    onBack = { navController.popBackStack() }
-                )
-            }
-
-            composable(Screen.EditEntries.route) {
-                EditEntriesScreen(
                     onBack = { navController.popBackStack() }
                 )
             }
