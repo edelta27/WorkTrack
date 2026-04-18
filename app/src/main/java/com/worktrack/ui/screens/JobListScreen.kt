@@ -101,7 +101,7 @@ fun JobListScreen(
                             .sumOf { it.hours }
 
                         Text(
-                            text = "${totalHours} h",
+                            text = "${"%.1f".format(totalHours)}h",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
