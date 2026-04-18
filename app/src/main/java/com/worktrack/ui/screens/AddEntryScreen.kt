@@ -45,10 +45,6 @@ fun AddEntryScreen(
 
     Column(modifier = Modifier.padding(16.dp)) {
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text("Dodaj godziny")
-
         Spacer(modifier = Modifier.height(8.dp))
 
         TextField(

@@ -23,9 +23,7 @@ fun ActivityScreen(onBack: () -> Unit) {
 
     Column(modifier = Modifier.padding(16.dp)) {
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text("Dodaj firmę")
+        Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
             value = name,

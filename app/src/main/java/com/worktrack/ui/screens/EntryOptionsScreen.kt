@@ -20,10 +20,6 @@ fun EntryOptionsScreen(
 
     Column(modifier = Modifier.padding(16.dp)) {
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text("Dodaj godziny")
-
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = onManualClick) {

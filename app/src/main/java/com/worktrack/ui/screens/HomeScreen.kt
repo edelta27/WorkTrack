@@ -2,18 +2,20 @@ package com.worktrack.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.*
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.worktrack.data.local.FakeDatabase
 import com.worktrack.data.model.Company
+import com.worktrack.ui.components.AppCard
 import java.util.Calendar
 
 
@@ -39,64 +41,71 @@ fun HomeScreen(
                 .padding(16.dp)
         ) {
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            FakeDatabase.companies.forEach { company ->
+            LazyColumn {
+                items(FakeDatabase.companies) { company ->
+                    val jobsForCompany = FakeDatabase.jobs
+                        .filter { it.companyId == company.id }
 
-                val jobsForCompany = FakeDatabase.jobs
-                    .filter { it.companyId == company.id }
+                    val currentMonth = getCurrentMonth()
 
-                val currentMonth = getCurrentMonth()
+                    val totalHours = FakeDatabase.entries
+                        .filter { entry ->
+                            entry.date.startsWith(currentMonth) &&
+                                    jobsForCompany.any { it.id == entry.jobId }
+                        }
+                        .sumOf { it.hours }
 
-                val totalHours = FakeDatabase.entries
-                    .filter { entry ->
-                        entry.date.startsWith(currentMonth) &&
-                                jobsForCompany.any { it.id == entry.jobId }
-                    }
-                    .sumOf { it.hours }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-
-                    Column(
+                    AppCard(
                         modifier = Modifier
-                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp)
                             .clickable {
                                 onCompanyClick(company.id)
                             }
                     ) {
-                        Text(text = company.name)
-
-                        Text(
-                            text = "${"%.1f".format(totalHours)} h",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-
-                    Row {
-
-                        Text(
-                            text = "Edytuj",
+                        Row(
                             modifier = Modifier
-                                .clickable {
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        onCompanyClick(company.id)
+                                    }
+                            ) {
+                                Text(
+                                    text = company.name,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+
+                                Text(
+                                    text = "${"%.1f".format(totalHours)} h",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+
+                            Row {
+                                IconButton(onClick = {
                                     companyToEdit = company
                                     editedCompanyName = company.name
+                                }) {
+                                    Text("✏️")
                                 }
-                                .padding(8.dp)
-                        )
 
-                        Text(
-                            text = "Usuń",
-                            modifier = Modifier
-                                .clickable {
+                                IconButton(onClick = {
                                     companyToDelete = company
+                                }) {
+                                    Text("🗑️")
                                 }
-                                .padding(8.dp)
-                        )
+                            }
+                        }
                     }
                 }
             }
@@ -109,7 +118,6 @@ fun HomeScreen(
 //
 //                Text("${job.name} - ${"%.2f".format(total)} h")
 //            }
-
             Button(
                 onClick = onHistoryClick,
                 modifier = Modifier
@@ -192,6 +200,7 @@ fun HomeScreen(
                             company.name = editedCompanyName
                         }
                         companyToEdit = null
+                        refreshTrigger++
                     }) {
                         Text("Zapisz")
                     }

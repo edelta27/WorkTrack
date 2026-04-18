@@ -1,6 +1,5 @@
 package com.worktrack.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,18 +7,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.worktrack.data.local.FakeDatabase
 import com.worktrack.data.model.WorkEntry
+import com.worktrack.ui.components.AppCard
 
 @Composable
 fun EntryListScreen(
@@ -33,66 +38,77 @@ fun EntryListScreen(
 
     Column(modifier = Modifier.padding(16.dp)) {
 
-        Text("Godziny")
-
         Spacer(modifier = Modifier.height(8.dp))
 
-        entries.forEach { entry ->
+        LazyColumn {
+            items(entries){ entry ->
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-
-                Text("${entry.date} - ${"%.2f".format(entry.hours)} h")
-
-                Text(
-                    text = "Edycja",
+                AppCard(
                     modifier = Modifier
-                        .clickable {
-                            onEditClick(entry.id)
-                        }
-                        .padding(8.dp)
-                )
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(text = "${entry.date}",
+                                style = MaterialTheme.typography.titleMedium)
 
-                Text(
-                    text = "Usuń",
-                    modifier = Modifier
-                        .clickable {
-                            entryToDelete = entry
+                            Text(text = "${"%.2f".format(entry.hours)} h",
+                                style = MaterialTheme.typography.bodySmall)
                         }
-                        .padding(8.dp)
-                )
+
+                        Row {
+
+                            IconButton(onClick = {
+                                onEditClick(entry.id)
+                            }) {
+                                Text("✏️")
+                            }
+
+                            IconButton(onClick = {
+                                entryToDelete = entry
+                            }) {
+                                Text("🗑️")
+                            }
+
+                        }
+                    }
+                }
             }
         }
 
-        entryToDelete?.let { entry ->
+            entryToDelete?.let { entry ->
 
-            AlertDialog(
-                onDismissRequest = { entryToDelete = null },
-                title = { Text("Usuń wpis") },
-                text = { Text("Czy na pewno chcesz usunąć ten wpis?") },
+                AlertDialog(
+                    onDismissRequest = { entryToDelete = null },
+                    title = { Text("Usuń wpis") },
+                    text = { Text("Czy na pewno chcesz usunąć ten wpis?") },
 
-                confirmButton = {
-                    Button(onClick = {
-                        FakeDatabase.entries.remove(entry)
-                        entryToDelete = null
-                    }) {
-                        Text("Tak")
+                    confirmButton = {
+                        Button(onClick = {
+                            FakeDatabase.entries.remove(entry)
+                            entryToDelete = null
+                        }) {
+                            Text("Tak")
+                        }
+                    },
+
+                    dismissButton = {
+                        Button(onClick = {
+                            entryToDelete = null
+                        }) {
+                            Text("Nie")
+                        }
                     }
-                },
+                )
+            }
 
-                dismissButton = {
-                    Button(onClick = {
-                        entryToDelete = null
-                    }) {
-                        Text("Nie")
-                    }
-                }
-            )
-        }
 
         Spacer(modifier = Modifier.height(16.dp))
 

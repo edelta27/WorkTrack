@@ -52,9 +52,6 @@ fun TimerScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Text("Timer")
-
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(

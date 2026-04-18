@@ -31,9 +31,7 @@ fun EditEntryScreen(
 
     Column(modifier = Modifier.padding(16.dp)) {
 
-        Text("Edytuj wpis")
-
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         TextField(
             value = hours,

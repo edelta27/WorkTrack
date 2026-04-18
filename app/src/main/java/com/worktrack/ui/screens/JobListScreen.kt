@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -20,10 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.worktrack.data.local.FakeDatabase
 import com.worktrack.data.model.Job
+import com.worktrack.ui.components.AppCard
 
 @Composable
 fun JobListScreen(
@@ -44,9 +47,7 @@ fun JobListScreen(
 
     Column(modifier = Modifier.padding(16.dp)) {
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text("Zlecenia")
+        Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
             value = jobName,
@@ -76,66 +77,73 @@ fun JobListScreen(
         LazyColumn {
             items(jobs) { job ->
 
-                Row(
+                AppCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(vertical = 6.dp)
+                        .clickable {
+                            onJobClick(job.id)
+                        }
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
 
-                        Text(
-                            text = job.name,
-                            modifier = Modifier.clickable {
+                            Text(
+                                text = job.name,
+                                modifier = Modifier.clickable {
                                     onJobClick(job.id)
+                                },
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            val currentMonth = getCurrentMonth()
+
+                            val totalHours = FakeDatabase.entries
+                                .filter {
+                                    it.jobId == job.id &&
+                                            it.date.startsWith(currentMonth)
                                 }
-                        )
+                                .sumOf { it.hours }
 
-                        val currentMonth = getCurrentMonth()
+                            Text(
+                                text = "${"%.1f".format(totalHours)}h",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
 
-                        val totalHours = FakeDatabase.entries
-                            .filter {
-                                it.jobId == job.id &&
-                                        it.date.startsWith(currentMonth)
+                        Row {
+                            IconButton(onClick = {
+                                jobToEdit = job
+                                editedName = job.name
+                            }) {
+                                Text("✏️")
                             }
-                            .sumOf { it.hours }
 
-                        Text(
-                            text = "${"%.1f".format(totalHours)}h",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-
-                    Row {
-                        Text(
-                            text = "Edytuj",
-                            modifier = Modifier
-                                .clickable {
-                                    jobToEdit = job
-                                    editedName = job.name
-                                }
-                                .padding(8.dp)
-                        )
-
-                        Text(
-                            text = "Usuń",
-                            modifier = Modifier.clickable {
+                            IconButton(onClick = {
                                 jobToDelete = job
+                            }) {
+                                Text("🗑️")
                             }
-                        )
 
-                        Text(
-                            text = "+",
-                            modifier = Modifier
-                                .clickable {
-                                    onAddEntryClick(job.id)
-                                }
-                                .padding(8.dp)
-                        )
+                            IconButton(onClick = {
+                                onAddEntryClick(job.id)
+                            }) {
+                                Text("+")
+                            }
+                        }
                     }
                 }
             }
+
         }
+
+
 
         jobToDelete?.let { job ->
 
